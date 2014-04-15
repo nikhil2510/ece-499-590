@@ -1,0 +1,44 @@
+#include "opencv2/highgui/highgui.hpp"
+#include "opencv2/imgproc/imgproc.hpp"
+#include "opencv/cv.h"
+#include "opencv/cxcore.h"
+#include <iostream>
+#include <stdio.h>
+#include <stdlib.h>
+
+using namespace std;
+using namespace cv;
+
+int main(int, char**)
+{
+	
+
+	CvCapture* capture = cvCaptureFromCAM(-1);
+
+	cv::Mat frame; cv::Mat out; cv::Mat out2; cv::Mat out3; cv::Mat out4; cv::Mat out5; cv::Mat out6;
+
+	while (1) {
+		frame = cvQueryFrame(capture);
+		imshow("Actual", frame);
+
+		GaussianBlur(frame, out, Size(5, 5), 0, 0);
+		cvtColor(out, out2, CV_BGR2GRAY); // produces out2, a one-channel image (CV_8UC1)
+		Canny(out, out2, 100, 200, 3); // the result goes to out2 again,but since it is still one channel it is fine
+		imshow("Edges", out2);
+
+		dilate(frame, out3, Mat(), Point(-1, -1), 2, 1, 1);
+		imshow("dilate", out3);
+
+		erode(frame, out4, Mat(), Point(-1, -1), 2, 1, 1);
+		imshow("erode", out4);
+
+		
+		
+
+		if (!frame.data) break;
+
+		char c = cvWaitKey(33);
+		if (c == 'q') break;
+	}
+	return 0;
+}
