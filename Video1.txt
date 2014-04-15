@@ -1,0 +1,68 @@
+#include "opencv2/imgproc/imgproc.hpp"
+#include "opencv2/highgui/highgui.hpp"
+#include "opencv/cxcore.h"
+#include "opencv/highgui.h"
+#include "opencv/cv.h"
+#include <stdlib.h>
+#include <stdio.h>
+using namespace std;
+
+#include <iostream>
+using namespace std;
+
+
+int main()
+{
+
+	//declare initial data
+	IplImage *grabCapture = 0; //used for inital video frame capture
+	IplImage *process = 0; //used for processing
+	IplImage *output = 0; //displays final output
+	IplImage* frame;
+	CvCapture* vidStream = cvCaptureFromCAM(0);
+
+	cvNamedWindow("BLUR", CV_WINDOW_AUTOSIZE);
+	cvNamedWindow("BnW", CV_WINDOW_AUTOSIZE);
+
+	int createimage = 1;
+	int key = cvWaitKey(1);
+
+	while (1)
+	{
+
+		grabCapture = cvQueryFrame(vidStream);
+		frame = cvQueryFrame(vidStream);
+		cvShowImage("Original", frame);
+		IplImage* gray = cvCreateImage(cvGetSize(frame), IPL_DEPTH_8U, 1);
+
+		if (createimage == 1)
+		{
+			process = cvCreateImage(cvGetSize(grabCapture), IPL_DEPTH_16U, 3);
+			
+
+			createimage = 0;
+
+		}
+
+		*process = *grabCapture;
+		cvSmooth(process, process, CV_GAUSSIAN, 7, 7); //line that makes it display frame instead of video
+		cvCvtColor(frame, gray, CV_RGB2GRAY);
+
+
+		cvShowImage("BLUR", process);
+		cvShowImage("BnW", gray);
+		cvWaitKey(10);
+		if (key == 'q') break;
+
+	}
+
+
+	//clean up data
+	cvReleaseImage(&grabCapture);
+	cvReleaseImage(&process);
+	cvReleaseImage(&output);
+	cvReleaseCapture(&vidStream);
+
+
+	return 0;
+}
